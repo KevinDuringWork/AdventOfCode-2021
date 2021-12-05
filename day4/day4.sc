@@ -157,6 +157,5 @@ def part2() : Unit = {
     }
 }
 
-
 part1()
 part2()
