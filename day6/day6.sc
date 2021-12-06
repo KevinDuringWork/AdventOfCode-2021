@@ -17,10 +17,11 @@ def simulate(fishes:Map[Int, BigInt], curr:Int=0, limit:Int=10): Map[Int, BigInt
     if (curr + 1 != limit) simulate(fishes, curr + 1, limit) else fishes
 }
 
-val state = simulate(
-    collection.mutable.Map(data.toSeq: _*).withDefaultValue(BigInt(0)), 0, 256
-)
+val part1 = simulate(collection.mutable.Map(data.toSeq: _*).withDefaultValue(BigInt(0)), 0, 80)
+    .foldLeft(BigInt(0)){case (acc, (k, v)) => acc + v}
 
-val count = state.foldLeft(BigInt(0)){case (acc, (k, v)) => acc + v}
+val part2 = simulate(collection.mutable.Map(data.toSeq: _*).withDefaultValue(BigInt(0)), 0, 256)
+    .foldLeft(BigInt(0)){case (acc, (k, v)) => acc + v}
 
-println(count)
+println(part1)
+println(part2)
