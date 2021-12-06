@@ -2,7 +2,7 @@ import scala.io.Source
 
 type Coordinate = (Int, Int)
 
-val data = Source.fromFile("./sample.txt").getLines.toList
+val data = Source.fromFile("./input.txt").getLines.toList
 
 def csv2coord(comma:String):Coordinate = {
     comma.split(",") match {case Array(x, y) => (x.toInt, y.toInt)}
@@ -43,7 +43,7 @@ val all_positions = data.foldLeft(List.empty[Coordinate])((acc, item) => {
         }
     }
 
-    println(s"${item} ${result}")
+    // println(s"${item} ${result}")
     acc ::: result   
 })
 
@@ -66,5 +66,5 @@ def dump(dup:Map[(Int, Int), Int]):Unit = {
     }
 }
 
-dump(dup_map)
+// dump(dup_map)
 println(dups)
