@@ -8,19 +8,19 @@ val data = Source.fromFile("./input.txt").getLines.take(1)
 
 @tailrec
 def simulate(fishes:Map[Int, BigInt], curr:Int=0, limit:Int=10): Map[Int, BigInt] = {
-    val update = Map[Int, BigInt]().withDefaultValue(BigInt(0))
-    
-    // time decrement 
-    for (i <- 0 to 8) {
-        update(i) = fishes((i + 1) % 9)
-    }
+    val update = fishes(0)
 
-    // reset timer 
-    update(6) = update(6) + fishes(0)
+    for (i <- 0 to 7) {fishes(i) = fishes(i + 1)}
+    fishes(8) = update
+    fishes(6) = fishes(6) + update
 
-    if (curr + 1 != limit) simulate(update, curr + 1, limit) else update
+    if (curr + 1 != limit) simulate(fishes, curr + 1, limit) else fishes
 }
 
-val state = simulate(collection.mutable.Map(data.toSeq: _*).withDefaultValue(BigInt(0)), 0, 256)
+val state = simulate(
+    collection.mutable.Map(data.toSeq: _*).withDefaultValue(BigInt(0)), 0, 256
+)
+
 val count = state.foldLeft(BigInt(0)){case (acc, (k, v)) => acc + v}
+
 println(count)
