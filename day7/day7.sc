@@ -1,5 +1,4 @@
 import scala.io.Source
-import scala.annotation.tailrec
 
 val data = Source.fromFile("./input.txt").getLines.take(1)
     .mkString.split(",").toList.map(_.toInt)
