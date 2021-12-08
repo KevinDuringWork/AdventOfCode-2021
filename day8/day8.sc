@@ -47,37 +47,23 @@ def permuted_char(chars:String, perm:IndexedSeq[Int]): String = {
 }
 
 def search(signals:Array[String], output:Array[String]): Int = {
-    var search_result:Int = -1
-    
-    breakable {
-        for (perm <- (0 to 6).permutations) {
 
-            // trim search... optimization 
-            var valid = true 
-            breakable {
-                for (chars <- signals) {
-                    val p_char  = permuted_char(chars, perm) 
-                    val p_value = constraints.getOrElse(p_char, -1)
-                    if (p_value == -1) {
-                        valid = false
-                        break 
-                    }
-                }
-            }
-            
-            // process output
-            if (valid) {
-                val result = output.foldLeft(List.empty[Int])((acc, chars) => { 
-                    constraints(permuted_char(chars, perm)) :: acc 
-                })
-            
-                search_result = result.reverse.mkString.toInt
-                break
-            }   
+    // search permutations  
+    (0 to 6).permutations.find(perm => {
+        signals.find(chars => {
+            constraints.getOrElse(permuted_char(chars, perm) , -1) == -1
+        }) match {
+            case Some(x) => false
+            case None => true
         }
-    }
+    }) match {
+        case Some(perm) => output.foldLeft(List.empty[Int])(
+                (acc, chars) => {
+                    constraints(permuted_char(chars, perm)) :: acc 
+                }).reverse.mkString.toInt
 
-    search_result
+        case None => -1 
+    }
 }
 
 val part2 = data.foldLeft(List.empty[Int])((acc, entry) => {
