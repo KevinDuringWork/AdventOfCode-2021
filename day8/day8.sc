@@ -1,5 +1,4 @@
 import scala.io.Source
-import scala.util.control.Breaks._
 
 // lessons learned: 
 // 1) how to memoize in scala?
@@ -49,7 +48,7 @@ def permuted_char(chars:String, perm:IndexedSeq[Int]): String = {
 def search(signals:Array[String], output:Array[String]): Int = {
 
     // search permutations  
-    (0 to 6).permutations.find(perm => {
+    (0 until ord.size).permutations.find(perm => {
         signals.find(chars => {
             constraints.getOrElse(permuted_char(chars, perm) , -1) == -1
         }) match {
