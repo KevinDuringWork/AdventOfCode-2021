@@ -22,7 +22,6 @@ val part1 = data.foldLeft(0)((acc, line) => {
     })
 })
 
-
 // part two: infer the rest of the results 
 val constraints:Map[String, Int] = Map(
     "abcefg"  -> 0,
@@ -48,54 +47,65 @@ def permuted_char(chars:String, perm:IndexedSeq[Int]): String = {
 def filters(signals:List[String]):Map[Int, Set[Int]]  = {
     signals.foldLeft(Map.empty[Int, Set[Int]]){case (rule_map, signal) => {
         
-        // rule (1) 
-        if (signal.length == 2) {
-            val possible_rule_1 = signal.toList
-                .map(c => ord.indexOf(c))
-            rule_map + (possible_rule_1(0) -> Set(2,5)) + (possible_rule_1(1) -> Set(2,5))
-        
-        // rule (4)
-        } else if (signal.length == 4) {
-            val possible_rule_4 = signal.toList
-                .map(c => ord.indexOf(c)).toSet
-                .diff(rule_map.map(_._1).toSet)
-                .toList
+        signal.length match {
 
-            rule_map + (possible_rule_4(0) -> Set(1,3)) + (possible_rule_4(1) -> Set(1,3))
-            
-        // rule (7), affected by rule(1)
-        } else if (signal.length == 3) {
-            val possible_rule_7 = signal.toList
-                .map(c => ord.indexOf(c)).toSet
-                .diff(rule_map.map(_._1).toSet)
-           
-            possible_rule_7.headOption match {
-                case Some(x) => rule_map + (x -> Set(0))
-                case None => rule_map 
+            // rule (1) 
+            case 2 => {
+                val possible_rule_1 = signal.toList
+                    .map(c => ord.indexOf(c))
+
+                rule_map + (possible_rule_1(0) -> Set(2,5)) + (possible_rule_1(1) -> Set(2,5))
             }
-        } else {
-        
-            // rule (4) ?? 
-            rule_map 
-        }         
+            
+            // rule (4)
+            case 4 => {
+                val possible_rule_4 = signal.toList
+                    .map(c => ord.indexOf(c)).toSet
+                    .diff(rule_map.map(_._1).toSet)
+                    .toList
+
+                rule_map + (possible_rule_4(0) -> Set(1,3)) + (possible_rule_4(1) -> Set(1,3))
+            }
+
+            // rule (7), affected by rule(1)
+            case 3 => {
+                val possible_rule_7 = signal.toList
+                    .map(c => ord.indexOf(c)).toSet
+                    .diff(rule_map.map(_._1).toSet)
+            
+                possible_rule_7.headOption match {
+                    case Some(x) => rule_map + (x -> Set(0))
+                    case None => rule_map 
+                }
+            }
+            
+            case _ => rule_map 
+        }
     }}
 }
 
 def search(signals:Array[String], output:Array[String]): Int = {
-    // println(s"${signals.toList} - ${output.toList}")
     
     val rule_map = filters((signals ++ output).toSet.toList.
         sortBy((x:String) => x.size))
 
-    (0 until ord.size).permutations.filter((perm) => {
+    val permutations = (0 until ord.size).permutations.filter((perm) => {
         // reduce permutation space w/ knowledge 
         rule_map.find({case (index:Int, possible:Set[Int]) => {
+
+            // TODO: this can be more complex 
             possible.contains(perm(index)) == false 
         }}) match {
             case Some(x) => false 
             case None => true 
         }
-    }).find(perm => {
+    }).toList
+
+    // println(s"${signals.toList} - ${output.toList}")
+    // rule_map.foreach{println(_)}
+    // permutations.foreach{println(_)}
+
+    permutations.find(perm => {
         // find working permutation 
         signals.find(chars => {
             constraints.getOrElse(permuted_char(chars, perm) , -1) == -1
@@ -106,7 +116,7 @@ def search(signals:Array[String], output:Array[String]): Int = {
     }) match {
         // apply permutation on results
         case Some(perm) => {
-                output.foldLeft(List.empty[Int])(
+            output.foldLeft(List.empty[Int])(
                 (acc, chars) => {
                     constraints(permuted_char(chars, perm)) :: acc 
                 }).reverse.mkString.toInt
