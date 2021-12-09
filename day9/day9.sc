@@ -5,8 +5,7 @@ import scala.collection.mutable
 // recursion, we meet again!
 // - is there a way to avoid blowing up the heap without a mutable
 
-val data = Source.fromFile("./input.txt").getLines
-    .toList.map(_.toList.map(_.asDigit))
+val data = Source.fromFile("./input.txt").getLines.toList.map(_.toList.map(_.asDigit))
 
 def dump(data: List[List[Int]]) {
     for (y <- (0 until data.size)) {
@@ -18,48 +17,35 @@ def dump(data: List[List[Int]]) {
 }
 
 def lowest_local_pt(data: List[List[Int]]) : List[Tuple3[Int, Int, Int]]  = {
-    val h = data.size 
-    val w = data(0).size 
+    val (h, w) = (data.size, data(0).size)
 
     (0 until w * h).foldLeft(List.empty[Tuple3[Int, Int ,Int]])((acc, coor) => {
-        val x = coor % w 
-        val y = coor / w 
-        val p = data(y)(x) 
-        
+        val (x, y) = (coor % w, coor / w)
+        val p = data(y)(x)
+
         val local = List((-1, 0), (1, 0), (0, -1), (0, 1))
             .foldLeft(List.empty[Int])((acc, pt) => {
-                val x1 = x + pt._2 
-                val y1 = y + pt._1 
+                val (y1, x1) = (y + pt._1, x + pt._2) 
                 if ((x1 >= 0 && x1 < w) && (y1 >= 0 && y1 < h)) data(y1)(x1) :: acc else acc 
         })
 
-        if (local.size > 0 && local.min > p) (y, x, p) :: acc else acc 
+        if (local.min > p) (y, x, p) :: acc else acc 
     }).reverse 
 }
 
 def basin(data: List[List[Int]], coor:Tuple2[Int, Int], visit:mutable.Set[Tuple2[Int, Int]]): List[Tuple2[Int, Int]] = {
     // println(s"basin: ${coor}=${data(coor._1)(coor._2)} | ${visit}")
-
-    val h = data.size 
-    val w = data(0).size 
-
+    val (h, w) = (data.size , data(0).size)
+    
     (coor._1, coor._2) :: List((-1, 0), (1, 0), (0, -1), (0, 1))
         .foldLeft(List.empty[Tuple2[Int, Int]])((acc, pt) => {
-            val x1 = coor._2 + pt._2 
-            val y1 = coor._1 + pt._1
+            val (y1, x1) = (coor._1 + pt._1, coor._2 + pt._2)
             if ((x1 >= 0 && x1 < w) && (y1 >= 0 && y1 < h)) {
-                val p1 = data(y1)(x1)
-                if (p1 < 9 && !visit((y1, x1))) {
+                if (data(y1)(x1) < 9 && !visit((y1, x1))) {
                     visit.add((y1->x1))
                     basin(data, (y1, x1), visit) ::: acc
-                } else {
-                    // out of bounds 
-                    acc 
-                }
-            } else {
-                // out of bounds 
-                acc 
-            }
+                } else acc
+            } else acc
         })
 }
 
