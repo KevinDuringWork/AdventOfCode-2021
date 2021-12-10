@@ -27,9 +27,7 @@ def parse_line(line:String):ParsedLine = {
                 }
 
                 // error occured
-                case _ => {
-                    ('x', Array(expect, char))
-                }
+                case _ => ('x', Array(expect, char))
             }
         }
     }
@@ -61,7 +59,5 @@ val part2_data = processed.filter(_._1 != 'x').foldLeft(List.empty[BigInt])((acc
 
 val part2 = part2_data(part2_data.size / 2)
 
-
-/// 126445911 -- too low 
 println(part1)
 println(part2)
