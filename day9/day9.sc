@@ -1,9 +1,8 @@
 import scala.io.Source
-import scala.math 
 import scala.collection.mutable
 
 // recursion, we meet again!
-// - is there a way to avoid blowing up the heap without a mutable
+// - is there a way to avoid blowing up the heap without a mutable?
 
 val data = Source.fromFile("./input.txt").getLines.toList.map(_.toList.map(_.asDigit))
 
@@ -42,18 +41,19 @@ def basin(data: List[List[Int]], coor:Tuple2[Int, Int], visit:mutable.Set[Tuple2
             val (y1, x1) = (coor._1 + pt._1, coor._2 + pt._2)
             if ((x1 >= 0 && x1 < w) && (y1 >= 0 && y1 < h)) {
                 if (data(y1)(x1) < 9 && !visit((y1, x1))) {
-                    visit.add((y1->x1))
+                    visit.add((y1 -> x1))
                     basin(data, (y1, x1), visit) ::: acc
-                } else acc
-            } else acc
-        })
+                } else acc // (9)
+            } else acc // (not in bounds)
+        }
+    )
 }
 
 // part 1
 val part1 = lowest_local_pt(data).map(_._3 + 1).sum
-val seeds = lowest_local_pt(data).map((x) => (x._1, x._2)) 
 
 // part 2: using a mutable visited map.. 
+val seeds = lowest_local_pt(data).map((x) => (x._1, x._2)) 
 val basins = seeds.foldLeft(List.empty[Int])((acc, seed) => {
     val mut_visit = mutable.Set[Tuple2[Int, Int]](seed)
     (basin(data, seed, mut_visit).toSet).size :: acc 
