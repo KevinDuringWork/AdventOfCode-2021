@@ -1,14 +1,16 @@
 import scala.io.Source
 
-val open_symbols  = List('(', '{', '[', '<')
-val close_symbols = List(')', '}', ']', '>')
+val open_symbols  = Array('(', '{', '[', '<')
+val close_symbols = Array(')', '}', ']', '>')
+
 val data = Source.fromFile("./input.txt").getLines.toList
 
 type ParsedLine = Tuple2[Char, Array[Char]]
 
-def parse_line(line:String):ParsedLine = {
+val processed = data.foldLeft(List.empty[ParsedLine])((acc, line) => {
     line.toList.foldLeft(('$', Array.empty[Char])){ 
         case ((expect, stack), char) => {
+
             // println(s"${char} - ${expect} - ${stack.toList}")
             (expect, char) match {
                 
@@ -30,11 +32,7 @@ def parse_line(line:String):ParsedLine = {
                 case _ => ('x', Array(expect, char))
             }
         }
-    }
-}
-
-val processed = data.foldLeft(List.empty[ParsedLine])((acc, line) => {
-    parse_line(line) :: acc 
+    } :: acc 
 }).reverse
 
 val part1 = processed.filter(_._1 == 'x').foldLeft(0)((acc, error) => {
@@ -46,7 +44,7 @@ val part1 = processed.filter(_._1 == 'x').foldLeft(0)((acc, error) => {
     })
 })
 
-val part2_data = processed.filter(_._1 != 'x').foldLeft(List.empty[BigInt])((acc, error) => {
+val part2 = processed.filter(_._1 != 'x').foldLeft(List.empty[BigInt])((acc, error) => {
     error._2.toList.reverse.foldLeft(BigInt(0))((acc_1, char) => {
         (acc_1 * 5) + (char match {
             case ')' => BigInt(1)
@@ -57,7 +55,5 @@ val part2_data = processed.filter(_._1 != 'x').foldLeft(List.empty[BigInt])((acc
     }) :: acc 
 }).sorted
 
-val part2 = part2_data(part2_data.size / 2)
-
 println(part1)
-println(part2)
+println(part2(part2.size / 2))
