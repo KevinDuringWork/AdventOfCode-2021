@@ -1,4 +1,4 @@
-import scala.io.Source
+    import scala.io.Source
 
 // lessons learned: 
 // 1) how to memoize in scala?
