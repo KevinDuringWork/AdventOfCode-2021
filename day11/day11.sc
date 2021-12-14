@@ -83,17 +83,6 @@ val part1 = (1 to 100).foldLeft((data:Grid, 0))((acc, iter) => {
     (update, count_flashes)
 })
 
-val part2 = (1 to 195).foldLeft((data:Grid, 0))((acc, iter) => {
-    val update = iteration(acc._1)
-    val count_flashes = update.foldLeft(0)((acc, y) => {
-        acc + y.foldLeft(0)((acc2, v) => {
-            if (v == 0) {acc2 + 1} else acc2
-        })
-    }) + acc._2 
-
-    (update, count_flashes)
-})
-
 def count_flashes(data:Grid) : Int = {
     data.foldLeft(0)((acc, y) => {
         acc + y.foldLeft(0)((acc2, v) => {
@@ -101,8 +90,10 @@ def count_flashes(data:Grid) : Int = {
         })
     })
 }
+
 def part2(data:Grid, count:Int): (Grid, Int) = {
-    if (count_flashes(data) != 100) part2(iteration(data), count+1) else (data, count) 
+    if (count_flashes(data) != 100) part2(iteration(data), count+1) 
+    else (data, count) 
 }
 
 println(part1._2)
