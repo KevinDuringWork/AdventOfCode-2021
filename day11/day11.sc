@@ -1,7 +1,13 @@
 import scala.io.Source
+import scala.annotation.tailrec
 
 type Grid = Array[Array[Int]]
 type Coordinate = (Int, Int)
+
+val directions = List(
+    (-1, -1),  (-1, 0),    (-1, 1), 
+    (0, -1),   /*(0, 0)*/  (0, 1), 
+    (1, -1),   (1, 0),     (1, 1))
 
 val data = Source.fromFile("./input.txt").getLines
     .toArray.map(_.toArray.map(_.asDigit))
@@ -16,14 +22,10 @@ def dump(data: Grid) {
     }
 }
 
+@tailrec
 def expansion(seeds:Set[Coordinate], next:Grid, vist:Grid): (Grid, Grid) = {
-    val directions = List(
-        (-1, -1),   (-1, 0),      (-1, 1), 
-        (0, -1),    /*(0, 0)*/    (0, 1), 
-        (1, -1),    (1, 0),       (1, 1))
-
     val frontier = seeds.foldLeft(Set.empty[Coordinate])((acc, seed) => {            
-        directions.foldLeft(Set.empty[(Int, Int)])((acc2, pt) => {
+        directions.foldLeft(Set.empty[Coordinate])((acc2, pt) => {
             val (y, x) = seed 
             val (y1, x1) = (y + pt._1, x + pt._2)
 
@@ -62,7 +64,7 @@ def step(data:Grid): Grid = {
     }
     
     // flashes 
-    val seeds = (0 until 10*10).foldLeft(Set.empty[(Int, Int)])((acc, coor) => {
+    val seeds = (0 until 10*10).foldLeft(Set.empty[Coordinate])((acc, coor) => {
         val (x, y) = (coor % 10, coor / 10)
         if (next_(y)(x) == 10) {
             next_(y)(x) = 0 
