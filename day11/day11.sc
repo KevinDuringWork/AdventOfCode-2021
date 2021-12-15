@@ -89,6 +89,7 @@ val part1 = (1 to 100).foldLeft((data:Grid, 0))((acc, iter) => {
     (update, count_flashes)
 })
 
+@tailrec
 def part2(data:Grid, count:Int): (Grid, Int) = {
     val num_flashes = data.foldLeft(0)((acc, y) => {
         acc + y.foldLeft(0)((acc2, v) => {
